@@ -1,2 +1,11 @@
 FROM eclipse-mosquitto:2
-COPY mosquitto/config/mosquitto.conf /mosquitto/config/mosquitto.conf
+
+# Fix ownership - mosquitto user is UID 1883
+COPY --chown=1883:1883 mosquitto/config/mosquitto.conf /mosquitto/config/mosquitto.conf
+COPY --chown=1883:1883 mosquitto/config/pwfile /mosquitto/config/pwfile
+
+# Ensure data dirs are writable
+RUN mkdir -p /mosquitto/data /mosquitto/log && \
+    chown -R 1883:1883 /mosquitto/data /mosquitto/log
+
+USER mosquitto
